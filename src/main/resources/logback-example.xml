@@ -1,0 +1,49 @@
+<configuration>
+    
+    <!--
+        An example Logback configuration file. Particularly usefull in GAE.
+        Two appenders are defined, one to be used in production and on in
+        development environments. A SystemPropertyFilter is define for each
+        one, that will enable/disable the appender depending on the environmet.
+        
+        For development we use the default ConsoleAppender, which prints nice
+        output to the console. If the same logger gets used in production, all
+        messages will be logged as DEBUG and will be hard to interpret using
+        GAE's console. For this reason we use JULLogbackAppender, which wraps
+        logging events to their JUL equivalents and GAE logs them with the
+        correct format.
+    -->
+    <appender name="JUL" class="com.javawords.logging.JULLogbackAppender">
+        
+        <filter class="com.javawords.logging.SystemPropertyFilter">
+            <propertyName>com.google.appengine.runtime.environment</propertyName>
+            <acceptedValue>Production</acceptedValue>
+        </filter>
+        
+        <encoder>
+            <Pattern> %logger{0} - %msg</Pattern>
+        </encoder>
+        
+    </appender>
+    
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        
+        <filter class="com.javawords.logging.SystemPropertyFilter">
+            <propertyName>com.google.appengine.runtime.environment</propertyName>
+            <acceptedValue>Development</acceptedValue>
+        </filter>
+        
+        <encoder>
+            <Pattern>%-4relative [%thread] %-5level - %logger{0}: %msg %n</Pattern>
+        </encoder>
+        
+    </appender>
+
+    <logger name="com.javawords" level="TRACE"/>
+
+    <root level="DEBUG">
+        <appender-ref ref="JUL" />
+        <appender-ref ref="STDOUT" />
+    </root>
+    
+</configuration>
